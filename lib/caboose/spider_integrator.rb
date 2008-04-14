@@ -78,6 +78,7 @@ require 'caboose'
 #   locations, and up until now this has been impossible to test in an automated fashion
 #   or without being strongly coupled to your code.
 # 
+require 'hpricot'
 module Caboose::SpiderIntegrator
 
   # Begin spidering your application.
@@ -115,18 +116,18 @@ module Caboose::SpiderIntegrator
   # todo: use hpricot or something else more fun (we will need to validate 
   # the html in this case since HTML::Document does it by default)
   def consume_page( html, url )
-    body = HTML::Document.new html
-    body.find_all(:tag=>'a').each do |tag|
+    body = Hpricot html
+    body.search('a').each do |tag|
       queue_link( tag, url )
     end
-    body.find_all(:tag=>'link').each do |tag|
+    body.search('link').each do |tag|
       # Strip appended browser-caching numbers from asset paths like ?12341234
       queue_link( tag, url )
     end
-    body.find_all(:tag => 'input', :attributes => { :name => nil }) do |input|
+    body.search('input[name=""]') do |input|
       queue_link( tag, url ) if tag['onclick']
     end
-    body.find_all(:tag =>'form').each do |form|
+    body.search('form').each do |form|
       form = SpiderableForm.new form
       queue_form( form, url )
     end
