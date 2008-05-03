@@ -96,7 +96,7 @@ module Caboose::SpiderIntegrator
   #    @forms_to_visit : array containing Caboose::SpiderIntegrator::Form.new( method, action, query, source ) objects
   #   
   # You may find it useful to have two spider tests, one logged in and one logged out.
-  def spider( body, uri, options )
+  def spider( body, uri, options = {} )
     @errors, @stacktraces = {}, {}
     setup_spider(options)
     begin
